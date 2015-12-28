@@ -19,6 +19,7 @@ namespace Sped\Gnre\Sefaz;
 
 use Sped\Gnre\Sefaz\Guia;
 use Sped\Gnre\Sefaz\ObjetoSefaz;
+use Sped\Gnre\Configuration\Setup;
 
 /**
  * Classe que contém os métodos necessários para armazenar as guias em lotes
@@ -39,6 +40,28 @@ abstract class LoteGnre implements ObjetoSefaz
      * @var array 
      */
     private $guias = array();
+
+    /**
+     * Configuração da API
+     * @var \Sped\Gnre\Configuration\Setup
+     */
+    private $setup;
+
+    /**
+     * Construtor da Classe
+     * @param Setup $setup Configuração da API
+     */
+    public function __construct(Setup $setup) {
+        $this->setup = $setup;
+    }
+
+    /**
+     * Retorna a configuração da aplicação
+     * @return Setup
+     */
+    public function getSetup() {
+        return $this->setup;
+    }
 
     /**
      * Método utilizado para armazenar a guia desejada na classe

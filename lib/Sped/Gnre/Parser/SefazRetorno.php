@@ -169,6 +169,7 @@ class SefazRetorno extends Rules
     protected function getMesAnoReferencia()
     {
         $this->lote['lote'][$this->index]->mes = $this->getContent($this->dadosArquivo[$this->index], 908, 30);
+        var_dump($this->lote['lote'][$this->index]->mes);
     }
 
     protected function getParcela()

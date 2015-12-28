@@ -17,6 +17,8 @@
 
 namespace Sped\Gnre\Sefaz;
 
+use Sped\Gnre\Configuration\Setup;
+
 /**
  * Interface criada para ser implementada pelas classes que desejam
  * enviar seus dados através do webservice da SEFAZ
@@ -28,6 +30,18 @@ namespace Sped\Gnre\Sefaz;
  */
 interface ObjetoSefaz
 {
+
+    /**
+     * Construtor padrão deve existir para ter acesso ao setup
+     * @param Setup $setup [description]
+     */
+    public function __construct(Setup $setup);
+
+    /**
+     * Retorna a configuração utilizada
+     * @return Setup 
+     */
+    public function getSetup();
 
     /**
      * Retorna em um formato de array os cabeçalhos necessários para a comunicação com o webservice da SEFAZ.

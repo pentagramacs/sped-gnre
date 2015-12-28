@@ -32,9 +32,9 @@ class UndefinedProperty extends \Exception
      * Define uma mensagem padrão caso a exceção seja lançada
      * @since  1.0.0
      */
-    public function __construct()
+    public function __construct($property = null)
     {
-        parent::__construct('Não foi possível encontrar o atributo desejado na classe', 100, null);
+        parent::__construct('Não foi possível encontrar o atributo "'. $property .'" na classe', 100, null);
     }
 
 }

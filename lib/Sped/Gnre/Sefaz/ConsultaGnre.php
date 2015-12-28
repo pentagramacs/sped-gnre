@@ -18,6 +18,7 @@
 namespace Sped\Gnre\Sefaz;
 
 use Sped\Gnre\Sefaz\ObjetoSefaz;
+use Sped\Gnre\Configuration\Setup;
 
 /**
  * Classe que possui os métodos fundamentais para se realizar uma consulta
@@ -31,20 +32,34 @@ use Sped\Gnre\Sefaz\ObjetoSefaz;
  */
 abstract class ConsultaGnre implements ObjetoSefaz
 {
-
-    /**
-     * O número que representa em qual ambiente sera realizada a consulta
-     * 1 - produção 2 - homologação
-     * @var int
-     */
-    private $environment;
-
     /**
      * O número do recibo enviado apos um lote recebido com sucesso pelo webservice
      * da sefaz geralmente com 10 posições (1406670518)
      * @var int 
      */
     private $recibo;
+
+    /**
+     * Configuração da API
+     * @var \Sped\Gnre\Configuration\Setup
+     */
+    private $setup;
+
+    /**
+     * Construtor da Classe
+     * @param Setup $setup Configuração da API
+     */
+    public function __construct(Setup $setup) {
+        $this->setup = $setup;
+    }
+
+    /**
+     * Retorna a configuração da aplicação
+     * @return Setup
+     */
+    public function getSetup() {
+        return $this->setup;
+    }
 
     /**
      * Retorna o número de recibo armazenado no atributo interno da classe
@@ -74,17 +89,17 @@ abstract class ConsultaGnre implements ObjetoSefaz
      */
     public function getEnvironment()
     {
-        return $this->environment;
+        return $this->setup->getEnvironment();
     }
 
     /**
      * Define o ambiente desejado para realizar a consulta no webservice da sefaz
      * @param  int  $environment  O número do ambiente que se deseja consultar número 1 representa produção e 2 representa homologação
      * @since  1.0.0
+     * @deprecated
      */
     public function setEnvironment($environment)
     {
-        $this->environment = $environment;
     }
 
 }

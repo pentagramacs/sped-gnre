@@ -17,6 +17,8 @@
 
 namespace Sped\Gnre\Parser;
 
+use Sped\Gnre\Configuration\BasicSetup;
+
 /**
  * Classe abstrata que utiliza o padrão de projeto Template Method para 
  * setar as regras de leitura do retorno da SEFAZ
@@ -162,7 +164,8 @@ abstract class Rules
      */
     public function getLote()
     {
-        $lote = new \Sped\Gnre\Sefaz\Lote();
+        $setup = new BasicSetup(); //dummy setup @TODO fazer validações no webservice para evitar criar esse objeto
+        $lote = new \Sped\Gnre\Sefaz\Lote($setup);
 
         for ($i = 0; $i < sizeof($this->dadosArquivo); $i++) {
             $this->index = $i;

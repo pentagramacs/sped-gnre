@@ -47,7 +47,7 @@ class Consulta extends ConsultaGnre
      */
     public function soapAction()
     {
-        return 'https://www.gnre.pe.gov.br/gnreWS/services/GnreResultadoLote';
+        return 'https://www.testegnre.pe.gov.br/gnreWS/services/GnreResultadoLote';
     }
 
     /**

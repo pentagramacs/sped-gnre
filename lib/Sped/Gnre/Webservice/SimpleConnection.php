@@ -18,31 +18,61 @@
 namespace Sped\Gnre\Webservice;
 
 use Sped\Gnre\Configuration\Setup;
+use Sped\Gnre\Sefaz\ObjetoSefaz;
+use Sped\Gnre\Webservice\Result\ConnectionResult;
+use Sped\Gnre\Webservice\Result\LoteResult;
+use Sped\Gnre\Webservice\Result\ConsultaResult;
+use Sped\Gnre\Sefaz\LoteGnre;
+use Sped\Gnre\Sefaz\ConsultaGnre;
 
 /**
  * Classe que realiza a conexão com o webservice da SEFAZ com a
  * configuração definida em alguma classe que implementa \Sped\Gnre\Configuration\Interfaces\Setup e
  * para o envido das informações é utilizado o curl
+ *
+ * Versão para utilização simplificada.
+ * 
  * @package     gnre
  * @subpackage  webservice
- * @author      Matheus Marabesi <matheus.marabesi@gmail.com>
+ * @author      Victor Simonetti <victor.moura@pentagrama.com.br>
  * @license     http://www.gnu.org/licenses/gpl-howto.html GPL
  * @version     1.0.0
  */
-class Connection extends AbstractConnection
+class SimpleConnection extends AbstractConnection
 {
+    /**
+     * Objeto original da comunicação (Lote ou Consulta normalmente)
+     * @var ObjetoSefaz
+     */
+    protected $original;
 
     /**
      * Inicia os parâmetros com o curl para se comunicar com o  webservice da SEFAZ.
      * São setadas a URL de acesso o certificado que será usado e uma série de parâmetros
      * para a header do curl e caso seja usado proxy esse método o adiciona
-     * @param  \Sped\Gnre\Configuration\Interfaces\Setup $setup
-     * @param  $headers  array
-     * @param  $data  string
+     * @param  \Sped\Gnre\Sefaz\ObjetoSefaz $mixedObject
      * @since  1.0.0
      */
-    public function __construct(Setup $setup, $headers, $data)
+    public function __construct(ObjetoSefaz $mixedObject)
     {
-        $this->parseCurlOptions($setup, $headers, $data);
+        $this->original = $mixedObject;
+
+        $this->parseCurlOptions($mixedObject->getSetup(), $mixedObject->getHeaderSoap());
+    }
+
+    public function request() {
+        $this->addCurlOption(array(CURLOPT_POSTFIELDS => $this->original->toXml()));
+        $result = $this->doRequest($this->original->soapAction());
+
+        switch(true) {
+            case $this->original instanceof LoteGnre:
+                return new LoteResult($result);
+            break;
+            case $this->original instanceof ConsultaGnre:
+                return new ConsultaResult($result);
+            break;
+            default :
+                return new ConnectionResult($result);
+        }
     }
 }

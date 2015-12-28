@@ -18,6 +18,7 @@
 namespace Sped\Gnre\Sefaz;
 
 use Sped\Gnre\Exception\UndefinedProperty;
+use Sped\Gnre\Exception\IncorrectValue;
 
 /**
  * Classe responsável por criar uma simples guia GNRE. Essa classe
@@ -225,33 +226,42 @@ class Guia
     private $c33_dataPagamento;
 
     /**
-     * Para esse atributo é esperado um dado do tipo int
-     * com o intervalo entre 0 e 5 (1, 2, 3, 4 ou 5)
+     * Para esse atributo é esperado um dado do tipo inteiro
+     * para maiores informações visualizar a documentação oficial do GNRE
+     * http://www.gnre.pe.gov.br/gnre/index.html
      * @var    int
      */
-    private $periodo;
+    private $c05_referencia = array(
+        /**
+         * Para esse atributo é esperado um dado do tipo int
+         * com o intervalo entre 0 e 5 (1, 2, 3, 4 ou 5)
+         * @var    int
+         */
+        'periodo' => null,
 
-    /**
-     * Para esse atributo é esperado um dado do tipo int
-     * com algum mês do ano (IMPORTANTE : é necessário informar o zero a esquerma caso o mês
-     * desejado esteja entre 1 e 9)
-     * @var    int
-     */
-    private $mes;
+        /**
+         * Para esse atributo é esperado um dado do tipo int
+         * com algum mês do ano (IMPORTANTE : é necessário informar o zero a esquerma caso o mês
+         * desejado esteja entre 1 e 9)
+         * @var    int
+         */
+        'mes' => null,
 
-    /**
-     * Para esse atributo é esperado um dado do tipo int com
-     * algum ano válido como por exemplo 2014 (IMPORTANTE: o ano dever ser menor ou igual a 2000)
-     * @var    int
-     */
-    private $ano;
+        /**
+         * Para esse atributo é esperado um dado do tipo int com
+         * algum ano válido como por exemplo 2014 (IMPORTANTE: o ano dever ser menor ou igual a 2000)
+         * @var    int
+         */
+        'ano' => null,
 
-    /**
-     * Para esse atributo é esperado um dado do tipo int com
-     * o número de parcelas desejadas entre 1 e 999 ( 1, 2, 3, 4 ... 999)
-     * @var    int
-     */
-    private $parcela;
+        /**
+         * Para esse atributo é esperado um dado do tipo int com
+         * o número de parcelas desejadas entre 1 e 999 ( 1, 2, 3, 4 ... 999)
+         * @var    int
+         */
+        'parcela' => null
+
+        );
 
     /**
      * Para esse atributo é esperado um dado do tipo array
@@ -259,7 +269,7 @@ class Guia
      * codigo, tipo e valor
      * @var    array
      */
-    private $c39_camposExtras;
+    private $c39_camposExtras = array();
 
     /**
      * Para esse atributo é esperado um dado do tipo string
@@ -368,6 +378,22 @@ class Guia
     private $retornoNumeroDeControle;
 
     /**
+     * Método para construção da Guia por vetor
+     * 
+     * @param array $guia Posições seguindo vetor
+     */
+    public function __construct($guia = array())
+    {
+        foreach($guia as $index => $value) {
+            if ($index == 'c05_referencia' && !is_array($value)) {
+                throw new IncorrectValue($index);
+            }
+
+            $this->$index = $value;
+        }
+    }
+
+    /**
      * Método mágico utilizado para retornar um valor de um
      * determinado atributo na classe
      * @param  string  $property  Uma propriedade válida dessa classe
@@ -377,8 +403,17 @@ class Guia
      */
     public function __get($property)
     {
-        if ($this->verifyProperty($property)) {
-            return $this->$property;
+        switch ($property) {
+            case 'mes' :
+            case 'periodo':
+            case 'parcela':
+            case 'ano':
+                return $this->c05_referencia[$property];
+            break;
+            default:
+                if ($this->verifyProperty($property)) {
+                    return $this->$property;
+                }
         }
     }
 
@@ -393,9 +428,19 @@ class Guia
      */
     public function __set($property, $value)
     {
-        if ($this->verifyProperty($property)) {
-            $this->$property = $value;
-            return true;
+        switch ($property) {
+            case 'mes' :
+            case 'periodo':
+            case 'parcela':
+            case 'ano':
+                $this->c05_referencia[$property] = $value;
+                return true;
+            break;
+            default:
+                if ($this->verifyProperty($property)) {
+                    $this->$property = $value;
+                    return true;
+                }
         }
     }
 
@@ -416,4 +461,66 @@ class Guia
         return true;
     }
 
+    /**
+     * Retorna a guia em objeto XML
+     * 
+     * @param  \DOMDocument $dom Objeto DOM inicial
+     * @return \DOMElement
+     */
+    public function toXml(\DOMDocument $dom) {
+        $dados = $dom->createElement('TDadosGNRE');
+
+        $properties = get_object_vars($this);
+
+        if ($properties['c27_tipoIdentificacaoEmitente'] == 1) {
+            $properties['c03_idContribuinteEmitente'] = array('CNPJ' => $properties['c03_idContribuinteEmitente']);
+        } else {
+            $properties['c03_idContribuinteEmitente'] = array('CPF' => $properties['c03_idContribuinteEmitente']);
+        }
+
+        if ($properties['c34_tipoIdentificacaoDestinatario'] == 1) {
+            $properties['c35_idContribuinteDestinatario'] = array('CNPJ' => $properties['c35_idContribuinteDestinatario']);
+        } else {
+            $properties['c35_idContribuinteDestinatario'] = array('CPF' => $properties['c35_idContribuinteDestinatario']);
+        }
+
+        foreach($properties as $property => $value) {
+            if ($property == 'c39_camposExtras') {
+                if (is_array($this->c39_camposExtras) && count($this->c39_camposExtras) > 0) {
+                    $c39_camposExtras = $dom->createElement('c39_camposExtras');
+
+                    foreach ($this->c39_camposExtras as $key => $campos) {
+                        if (isset($campos['codigo']) && $campos['tipo'] && $campos['valor']) {
+                            $campoExtra = $dom->createElement('campoExtra');
+                            $codigo = $dom->createElement('codigo', $campos['codigo']);
+                            $tipo = $dom->createElement('tipo', $campos['tipo']);
+                            $valor = $dom->createElement('valor', $campos['valor']);
+
+                            $campoExtra->appendChild($codigo);
+                            $campoExtra->appendChild($tipo);
+                            $campoExtra->appendChild($valor);
+
+                            $c39_camposExtras->appendChild($campoExtra);
+                        }
+                    }
+
+                    $dados->appendChild($c39_camposExtras);
+                }
+            } elseif (!empty($value)) {
+                if (!is_array($value)) {
+                    $element = $dom->createElement($property, $value);
+                } else {
+                    $element = $dom->createElement($property);
+
+                    foreach($value as $prop => $val) {
+                        $el = $dom->createElement($prop, $val);
+                        $element->appendChild($el);
+                    }
+                }
+                $dados->appendChild($element);
+            }
+        }
+
+        return $dados;
+    }
 }
