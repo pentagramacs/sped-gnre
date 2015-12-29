@@ -197,7 +197,7 @@
                                 <td class="nobottom" align="left">Nº Parcela</td>
                             </tr>
                             <tr>
-                                <td colspan="2" class="notop" align="right">{$guia->mes / $guia->ano}</td>
+                                <td colspan="2" class="notop" align="right">{$guia->mes} / {$guia->ano}</td>
                                 <td class="notop" align="right">{$guia->parcela}</td>
                             </tr>
                             <tr>
