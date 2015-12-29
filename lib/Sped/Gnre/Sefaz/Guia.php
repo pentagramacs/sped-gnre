@@ -472,13 +472,13 @@ class Guia
 
         $properties = get_object_vars($this);
 
-        if ($properties['c27_tipoIdentificacaoEmitente'] == 1) {
+        if ($properties['c27_tipoIdentificacaoEmitente'] == 1) { // tipo = 1 CNPJ
             $properties['c03_idContribuinteEmitente'] = array('CNPJ' => $properties['c03_idContribuinteEmitente']);
         } else {
             $properties['c03_idContribuinteEmitente'] = array('CPF' => $properties['c03_idContribuinteEmitente']);
         }
 
-        if ($properties['c34_tipoIdentificacaoDestinatario'] == 1) {
+        if ($properties['c34_tipoIdentificacaoDestinatario'] == 1) { // tipo = 1 CNPJ
             $properties['c35_idContribuinteDestinatario'] = array('CNPJ' => $properties['c35_idContribuinteDestinatario']);
         } else {
             $properties['c35_idContribuinteDestinatario'] = array('CPF' => $properties['c35_idContribuinteDestinatario']);
