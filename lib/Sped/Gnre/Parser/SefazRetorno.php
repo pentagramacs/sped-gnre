@@ -153,12 +153,20 @@ class SefazRetorno extends Rules
 
     protected function getDataDeVencimento()
     {
-        $this->lote['lote'][$this->index]->c14_dataVencimento = $this->getContent($this->dadosArquivo[$this->index], 892, 8);
+        $dia = $this->getContent($this->dadosArquivo[$this->index], 892, 2);
+        $mes = $this->getContent($this->dadosArquivo[$this->index], 894, 2);
+        $ano = $this->getContent($this->dadosArquivo[$this->index], 896, 4);
+
+        $this->lote['lote'][$this->index]->c14_dataVencimento = $dia.'/'.$mes.'/'.$ano;
     }
 
     protected function getDataLimitePagamento()
     {
-        $this->lote['lote'][$this->index]->c33_dataPagamento = $this->getContent($this->dadosArquivo[$this->index], 900, 8);
+        $dia = $this->getContent($this->dadosArquivo[$this->index], 900, 2);
+        $mes = $this->getContent($this->dadosArquivo[$this->index], 902, 2);
+        $ano = $this->getContent($this->dadosArquivo[$this->index], 904, 4);
+
+        $this->lote['lote'][$this->index]->c33_dataPagamento = $dia.'/'.$mes.'/'.$ano;
     }
 
     protected function getPeriodoReferencia()
@@ -166,20 +174,26 @@ class SefazRetorno extends Rules
         $this->lote['lote'][$this->index]->periodo = $this->getContent($this->dadosArquivo[$this->index], 909, 1);
     }
 
-    protected function getMesAnoReferencia()
+    protected function getMesReferencia()
     {
-        $this->lote['lote'][$this->index]->mes = $this->getContent($this->dadosArquivo[$this->index], 908, 30);
-        var_dump($this->lote['lote'][$this->index]->mes);
+        $this->lote['lote'][$this->index]->mes = $this->getContent($this->dadosArquivo[$this->index], 909, 2);
+    }
+
+    protected function getAnoReferencia()
+    {
+        $this->lote['lote'][$this->index]->ano = $this->getContent($this->dadosArquivo[$this->index], 911, 4);
     }
 
     protected function getParcela()
     {
-        $this->lote['lote'][$this->index]->parcela = $this->getContent($this->dadosArquivo[$this->index], 915, 3);
+        $parcela = ((int)$this->getContent($this->dadosArquivo[$this->index], 915, 3)) ? (int)$this->getContent($this->dadosArquivo[$this->index], 915, 3) : 1;
+        $this->lote['lote'][$this->index]->parcela = $parcela;
     }
 
     protected function getValorPrincipal()
     {
-        $this->lote['lote'][$this->index]->c06_valorPrincipal = $this->getContent($this->dadosArquivo[$this->index], 918, 15);
+        $valorPrincipal = ( (float)$this->getContent($this->dadosArquivo[$this->index], 918, 15) / 100);
+        $this->lote['lote'][$this->index]->c06_valorPrincipal = number_format ( $valorPrincipal , 2 , "," , "." );
     }
 
     protected function getSequencialGuia()
@@ -199,17 +213,31 @@ class SefazRetorno extends Rules
 
     protected function getAtualizacaoMonetaria()
     {
-        $this->lote['lote'][$this->index]->retornoAtualizacaoMonetaria = $this->getContent($this->dadosArquivo[$this->index], 933, 15);
+        $atualizacaoMonetaria = ( (float)$this->getContent($this->dadosArquivo[$this->index], 933, 15) / 100);
+        $this->lote['lote'][$this->index]->retornoAtualizacaoMonetaria = number_format ( $atualizacaoMonetaria , 2 , "," , "." );
     }
 
     protected function getJuros()
     {
-        $this->lote['lote'][$this->index]->retornoJuros = $this->getContent($this->dadosArquivo[$this->index], 948, 15);
+        $juros = ( (float)$this->getContent($this->dadosArquivo[$this->index], 948, 15) / 100);
+        $this->lote['lote'][$this->index]->retornoJuros = number_format ( $juros , 2 , "," , "." );
     }
 
     protected function getMulta()
     {
-        $this->lote['lote'][$this->index]->retornoMulta = $this->getContent($this->dadosArquivo[$this->index], 963, 15);
+        $multa = ( (float)$this->getContent($this->dadosArquivo[$this->index], 963, 15) / 100);
+        $this->lote['lote'][$this->index]->retornoMulta = number_format ( $multa , 2 , "," , "." );
+    }
+
+    protected function getValorTotal()
+    {
+        $valorPrincipal = ( (float)$this->getContent($this->dadosArquivo[$this->index], 918, 15) / 100);
+        $multa = ( (float)$this->getContent($this->dadosArquivo[$this->index], 963, 15) / 100);
+        $juros = ( (float)$this->getContent($this->dadosArquivo[$this->index], 948, 15) / 100);
+
+
+        $valorTotal = $valorPrincipal + $multa + $juros;
+        $this->lote['lote'][$this->index]->c10_valorTotal = number_format ( $valorTotal , 2 , "," , "." );
     }
 
     protected function getRepresentacaoNumerica()

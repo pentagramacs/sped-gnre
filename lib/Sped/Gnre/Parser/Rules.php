@@ -121,6 +121,10 @@ abstract class Rules
 
     protected abstract function getPeriodoReferencia();
 
+    protected abstract function getMesReferencia();
+
+    protected abstract function getAnoReferencia();
+
     protected abstract function getParcela();
 
     protected abstract function getValorPrincipal();
@@ -130,6 +134,8 @@ abstract class Rules
     protected abstract function getJuros();
 
     protected abstract function getMulta();
+
+    protected abstract function getValorTotal();
 
     protected abstract function getRepresentacaoNumerica();
 
@@ -201,11 +207,14 @@ abstract class Rules
                 $this->getDataDeVencimento();
                 $this->getDataLimitePagamento();
                 $this->getPeriodoReferencia();
+                $this->getMesReferencia();
+                $this->getAnoReferencia();
                 $this->getParcela();
                 $this->getValorPrincipal();
                 $this->getAtualizacaoMonetaria();
                 $this->getJuros();
                 $this->getMulta();
+                $this->getValorTotal();
                 $this->getRepresentacaoNumerica();
                 $this->getCodigoBarras();
                 $this->getNumeroDeControle();
