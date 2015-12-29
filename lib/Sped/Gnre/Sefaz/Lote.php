@@ -48,7 +48,7 @@ class Lote extends LoteGnre
      */
     public function soapAction()
     {
-        return 'https://www.gnre.pe.gov.br/gnreWS/services/GnreLoteRecepcao';
+        return 'https://www.testegnre.pe.gov.br/gnreWS/services/GnreLoteRecepcao';
     }
 
     /**
